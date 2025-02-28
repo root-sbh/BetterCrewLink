@@ -7,3 +7,8 @@ yarn-error.log
 .vscode/
 package-lock.json
 debug.log
+src/.vs/slnx.sqlite
+src/.vs/VSWorkspaceState.json
+src/.vs/src/FileContentIndex/78fa1b40-e215-47a9-9e15-f6012cd5a1c7.vsidx
+src/.vs/src/v17/.wsuo
+src/.vs/src/v17/DocumentLayout.json

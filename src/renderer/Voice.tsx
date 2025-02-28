@@ -845,7 +845,6 @@ const Voice: React.FC<VoiceProps> = function ({ t, error: initialError }: VoiceP
 			autoGainControl: false,
 			channelCount: 2,
 			echoCancellation: settings.echoCancellation,
-			latency: 0,
 			noiseSuppression: settings.noiseSuppression,// @ts-ignore-line
 			googNoiseSuppression: settings.noiseSuppression, // @ts-ignore-line
 			googEchoCancellation: settings.echoCancellation, // @ts-ignore-line
