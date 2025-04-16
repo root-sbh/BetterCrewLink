@@ -151,6 +151,7 @@ export default class GameReader {
 		if (this.checkProcessDelay-- <= 0) {
 			this.checkProcessDelay = 30;
 			try {
+				//Version問い合わせで代用する
 				await this.checkProcessOpen();
 			} catch (e) {
 				this.checkProcessDelay = 0
@@ -159,11 +160,12 @@ export default class GameReader {
 		}
 		if (
 			this.PlayerStruct &&
-			this.offsets &&
-			this.amongUs !== null &&
-			this.gameAssembly !== null &&
-			this.offsets !== undefined
+			this.offsets && //不要
+			this.amongUs !== null && //不要
+			this.gameAssembly !== null && //たぶん不要
+			this.offsets !== undefined //不要
 		) {
+			//プレイヤーの色リストを取得(不要)
 			this.loadColors();
 
 			let state = GameState.UNKNOWN;
@@ -179,6 +181,7 @@ export default class GameReader {
 				this.offsets.innerNetClient.base
 			);
 
+			//gain有効かで判断する？
 			const gameState = this.readMemory<number>('int', innerNetClient, this.offsets.innerNetClient.gameState);
 
 			switch (gameState) {
@@ -194,6 +197,9 @@ export default class GameReader {
 					else state = GameState.TASKS;
 					break;
 			}
+
+			//ゲームコード取得
+			//API問い合わせのみで良い
 			// const DEBUG = true;
 			const lobbyCodeInt =
 				state === GameState.MENU
@@ -234,12 +240,15 @@ export default class GameReader {
 				(this.oldGameState != state &&
 					(this.oldGameState === GameState.MENU || this.oldGameState === GameState.UNKNOWN))
 			) {
+				//いる？
 				this.readCurrentServer();
 			}
 			if ((this.gameCode || this.isLocalGame) && playerCount) {
 				for (let i = 0; i < Math.min(playerCount, 40); i++) {
 					const { address, last } = this.offsetAddress(playerAddrPtr, this.offsets.player.offsets);
 					if (address === 0) continue;
+					//PlayerDataは生バイナリ、playerがPlayerオブジェクト
+					//memorypackの受信とdeserializeに変更する
 					const playerData = readBuffer(this.amongUs.handle, address + last, this.offsets.player.bufferLength);
 					const player = this.parsePlayer(address + last, playerData, clientId);
 					playerAddrPtr += this.is_64bit ? 8 : 4;
@@ -268,6 +277,7 @@ export default class GameReader {
 				);
 				maxPlayers = this.readMemory<number>('byte', gameOptionsPtr, this.offsets.gameOptions_MaxPLayers);
 				map = this.readMemory<number>('byte', gameOptionsPtr, this.offsets.gameOptions_MapId);
+				//以下、カメラ・サボ・ドアの状態取得。全部不要
 				if (state === GameState.TASKS) {
 					const shipPtr = this.readMemory<number>('ptr', this.gameAssembly.modBaseAddr, this.offsets.shipStatus);
 
